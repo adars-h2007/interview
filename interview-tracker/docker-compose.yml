@@ -1,0 +1,23 @@
+services:
+  database:
+    image: mysql:8.4
+    container_name: interview-tracker-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: interview_tracker
+      MYSQL_USER: interview_tracker
+      MYSQL_PASSWORD: interview_tracker
+      MYSQL_ROOT_PASSWORD: local_root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - interview-tracker-data:/var/lib/mysql
+      - ./backend/src/main/resources/database/schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  interview-tracker-data:
